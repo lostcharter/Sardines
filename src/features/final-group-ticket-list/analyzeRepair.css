@@ -1,0 +1,1685 @@
+
+/* Analyze & Repair workspace */
+
+.analyze-repair-workspace {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5rem;
+  border: 2px solid #8d7a43;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #f3e7c9;
+  box-shadow: 3px 4px 0 rgba(91, 76, 41, 0.13);
+}
+
+.analyze-repair-header {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid #c9b77f;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.25), transparent 70%),
+    #eadcb9;
+}
+
+.analyze-kicker {
+  margin: 0 0 0.25rem;
+  color: #6e5e31;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.analyze-repair-header h3,
+.analyze-panel-heading h3,
+.comment-review-card h4 {
+  margin-top: 0;
+  color: #193b3a;
+}
+
+.trip-type-selector {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.15rem;
+  margin-top: 1rem;
+}
+
+.trip-type-selector > span {
+  margin-right: 0.1rem;
+  color: #6e5e31;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 900;
+}
+
+.trip-type-selector.required > span,
+.trip-type-selector.required + .trip-type-note {
+  color: #8d2925;
+  opacity: 1;
+}
+
+.trip-type-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #294643;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trip-type-option input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trip-type-option strong {
+  font-size: 0.92rem;
+}
+
+.trip-type-option input[type="radio"]:checked ~ strong {
+  color: #8d2925;
+  text-shadow: 0 1px 0 #fff3cf;
+}
+
+.trip-type-note {
+  max-width: 850px;
+  margin-bottom: 0;
+  opacity: 0.78;
+}
+
+.export-readiness {
+  position: fixed;
+  z-index: 50;
+  left: 50%;
+  bottom: 1rem;
+  width: min(920px, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #b7a466;
+  border-radius: 12px;
+  background: #fff8e7;
+  box-shadow: inset 0 0 0 2px rgba(213,184,90,0.12);
+}
+
+.export-readiness > span {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.export-readiness > strong {
+  display: block;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.export-readiness p {
+  margin: 0;
+}
+
+.export-readiness .readiness-blocker-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8d2925;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+  cursor: pointer;
+}
+
+.export-readiness .readiness-blocker-link:hover {
+  color: #b3342e;
+}
+
+.readiness-confirmation-links {
+  min-width: 0;
+}
+
+.export-readiness .readiness-confirmation-links button {
+  padding: 0.32rem 0.5rem;
+  border-color: #b64b42;
+  border-radius: 999px;
+  background: #f8e1dc;
+  color: #7d2723;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.confirmation-target {
+  animation: confirmation-target-pulse 800ms ease-in-out 2;
+}
+
+@keyframes confirmation-target-pulse {
+  50% {
+    outline: 4px solid rgba(182, 75, 66, 0.35);
+    outline-offset: 3px;
+  }
+}
+
+.analyze-repair-body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  min-height: 420px;
+  padding-bottom: 5rem;
+}
+
+.analyze-nav {
+  padding: 0.85rem;
+  border-right: 1px solid #c9b77f;
+  background: #eadcb9;
+}
+
+.analyze-nav-button {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 43px;
+  margin-bottom: 0.5rem;
+  padding: 0.48rem 0.55rem;
+  border-radius: 7px;
+  text-align: left;
+}
+
+.analyze-nav-button::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border: 1px solid #514425;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #d8c47e, #776431 70%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.28), 0 1px 1px rgba(48,41,28,0.3);
+}
+
+.analyze-nav-label {
+  overflow: hidden;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+  text-overflow: ellipsis;
+}
+
+.analyze-nav-button > strong {
+  display: grid;
+  place-items: center;
+  min-width: 1.7rem;
+  min-height: 1.45rem;
+  padding: 0 0.3rem;
+  border: 1px solid #80703f;
+  border-radius: 4px;
+  background: #e3d7b7;
+  color: #294643;
+  box-shadow: inset 0 2px 3px rgba(69, 57, 29, 0.18);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.analyze-nav-button > strong.has-warnings {
+  border-color: #8d2925;
+  background: #f1c8bf;
+  color: #7d2723;
+}
+
+.analyze-nav-button.active {
+  font-weight: 800;
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+.analyze-nav-button.active::before {
+  border-color: #f0cf6e;
+  background: radial-gradient(circle at 38% 32%, #fff0a8, #d6a936 60%, #7c5518 100%);
+  box-shadow: 0 0 7px rgba(255, 220, 105, 0.75);
+}
+
+.analyze-nav-button.active > strong {
+  border-color: #e6ca76;
+  background: #fff3c8;
+  color: #702520;
+}
+
+.analyze-panel {
+  min-width: 0;
+  padding: 1.1rem;
+}
+
+.analyze-panel-heading {
+  margin-bottom: 1rem;
+}
+
+.analyze-panel-heading p {
+  margin-bottom: 0;
+  opacity: 0.76;
+}
+
+.comment-review-list,
+.compact-review-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.compact-review-list {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+  gap: 0.55rem;
+}
+
+.comment-review-card,
+.compact-review-card,
+.analyze-empty-state {
+  padding: 0.72rem 0.8rem;
+  border: 1px solid rgba(127, 127, 127, 0.25);
+  border-radius: 12px;
+}
+
+.comment-review-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.comment-review-heading h4,
+.comment-review-heading p {
+  margin-bottom: 0.2rem;
+}
+
+.comment-cleaned {
+  margin-top: 0.85rem;
+}
+
+.comment-cleaned p {
+  margin-bottom: 0;
+}
+
+.comment-clues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.review-chip {
+  display: inline-flex;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(127, 127, 127, 0.32);
+  border-radius: 999px;
+  font-size: 0.84rem;
+}
+
+.review-chip.warning {
+  font-weight: 700;
+}
+
+.raw-comment-details {
+  margin-top: 0.85rem;
+}
+
+.raw-comment-details summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.raw-comment-details p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.compact-review-card > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.compact-review-card p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.compact-review-card small {
+  opacity: 0.72;
+}
+
+.ff-review-card {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ff-review-form,
+.ff-review-form label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ff-review-form label span {
+  color: #45645f;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.ff-review-form input {
+  width: 100%;
+  padding: 0.52rem 0.6rem;
+  border: 1px solid #b7a466;
+  border-radius: 7px;
+  background: #fffdf7;
+  color: #173c3a;
+  font: inherit;
+}
+
+.ff-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ff-review-actions button,
+.ff-reviewed-item button {
+  padding: 0.42rem 0.58rem;
+  border: 1px solid #8d7a43;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fff8e7, #ead9a8);
+  color: #193b3a;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.ff-review-actions button:first-child {
+  border-color: #8d2925;
+  background: #a62f2b;
+  color: #fff8e7;
+}
+
+.ff-review-actions button.quiet {
+  margin-left: auto;
+  background: #fffdf7;
+}
+
+.ff-reviewed-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.8rem 0;
+}
+
+.ff-reviewed-list h4 {
+  margin: 0;
+}
+
+.ff-reviewed-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #91abc0;
+  border-radius: 8px;
+  background: #ddebf7;
+}
+
+.ff-reviewed-item div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.ff-reviewed-item span {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 820px) {
+  .analyze-repair-header,
+  .analyze-repair-body {
+    grid-template-columns: 1fr;
+  }
+
+  .analyze-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 0.5rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(127, 127, 127, 0.22);
+  }
+
+  .analyze-nav-button {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .export-readiness {
+    grid-template-columns: 1fr auto;
+  }
+
+  .export-readiness > span,
+  .export-readiness p {
+    display: none;
+  }
+
+  .readiness-confirmation-links {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .export-readiness .open-can-button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .export-readiness > strong {
+    display: none;
+  }
+}
+
+
+/* Compact Comments table — designed to avoid horizontal and vertical sprawl. */
+
+.comment-table-wrap {
+  width: 100%;
+  overflow-x: hidden;
+  border: 1px solid rgba(127, 127, 127, 0.25);
+  border-radius: 10px;
+}
+
+.comment-review-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.comment-review-table th,
+.comment-review-table td {
+  padding: 0.48rem 0.55rem;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.18);
+  vertical-align: middle;
+  text-align: left;
+}
+
+.comment-review-table th {
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.comment-review-table th:nth-child(1),
+.comment-review-table td:nth-child(1) {
+  width: 74px;
+}
+
+.comment-review-table th:nth-child(2),
+.comment-review-table td:nth-child(2) {
+  width: 150px;
+}
+
+.comment-review-table th:nth-child(3),
+.comment-review-table td:nth-child(3) {
+  width: 78px;
+}
+
+.comment-review-table th:nth-child(4),
+.comment-review-table td:nth-child(4) {
+  width: 38%;
+}
+
+.comment-review-table th:nth-child(5),
+.comment-review-table td:nth-child(5) {
+  width: auto;
+}
+
+.comment-review-table th:nth-child(6),
+.comment-review-table td:nth-child(6) {
+  width: 68px;
+}
+
+.comment-traveler-cell {
+  font-weight: 700;
+}
+
+.comment-text-cell span,
+.comment-found-cell {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comment-status {
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.comment-action-cell {
+  text-align: right !important;
+}
+
+.comment-action-cell button {
+  padding: 0.3rem 0.45rem;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+
+.comment-detail-row td {
+  padding: 0;
+}
+
+.comment-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: 1rem;
+  padding: 0.75rem 1rem 0.9rem;
+  background: rgba(127, 127, 127, 0.05);
+}
+
+.comment-detail-grid p {
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .comment-review-table th:nth-child(1),
+  .comment-review-table td:nth-child(1) {
+    display: none;
+  }
+
+  .comment-review-table th:nth-child(2),
+  .comment-review-table td:nth-child(2) {
+    width: 135px;
+  }
+
+  .comment-review-table th:nth-child(3),
+  .comment-review-table td:nth-child(3) {
+    width: 70px;
+  }
+
+  .comment-review-table th:nth-child(6),
+  .comment-review-table td:nth-child(6) {
+    width: 62px;
+  }
+
+  .comment-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ==================================================
+SARDINES REVIEW — VINTAGE TIN CONTROL OVERRIDES
+================================================== */
+
+.analyze-nav-button,
+.comment-action-cell button,
+.export-readiness button {
+  border: 1px solid #8d7a43;
+  color: #193b3a;
+  background: linear-gradient(180deg, #fff8e7, #ead9a8);
+  box-shadow: 0 2px 0 rgba(91,76,41,0.28);
+  font-weight: 800;
+}
+
+.analyze-nav-button:hover,
+.comment-action-cell button:hover,
+.export-readiness button:hover:not(:disabled) {
+  border-color: #5b4c29;
+  background: linear-gradient(180deg, #f8e9b8, #d9bd62);
+  transform: translateY(-1px);
+}
+
+.analyze-nav-button.active {
+  border-color: #8d2925;
+  color: #fff8e7;
+  background: linear-gradient(180deg, #b93c35, #992d29);
+  outline: 2px solid #d8bd68;
+  outline-offset: 2px;
+  box-shadow: 0 2px 0 #6f241f;
+}
+
+.export-readiness .open-can-button {
+  min-height: var(--control-height);
+  border: 1px solid var(--control-gold-edge);
+  border-radius: var(--control-radius);
+  padding: 0.58rem 0.82rem;
+  background: var(--control-gold);
+  color: var(--control-ink);
+  font-family: inherit;
+  font-weight: 900;
+  box-shadow: 0 2px 0 var(--control-gold-edge);
+}
+
+.export-readiness .open-can-button:hover:not(:disabled) {
+  border-color: var(--control-gold-edge);
+  background: var(--control-gold-hover);
+}
+
+.export-readiness .open-can-button:disabled {
+  border-color: #aaa18c;
+  background: var(--control-disabled);
+  color: var(--control-disabled-ink);
+  box-shadow: 0 2px 0 #aaa18c;
+  cursor: not-allowed;
+}
+
+.analyze-panel {
+  background: #fff8e7;
+}
+
+.comment-review-card,
+.compact-review-card,
+.analyze-empty-state,
+.comment-table-wrap {
+  border-color: #c9b77f;
+  background: #fffdf7;
+}
+
+.comment-review-table th {
+  color: #5b4c29;
+  background: #eadcb9;
+  opacity: 1;
+}
+
+.comment-review-table td {
+  border-bottom-color: #dfd0a8;
+}
+
+.comment-detail-grid {
+  background: #f3e7c9;
+}
+
+.review-chip {
+  border-color: #b7a466;
+  background: #f7eccb;
+}
+
+.review-chip.warning {
+  border-color: #c5a94e;
+  background: #f5e8b6;
+  color: #5f5124;
+}
+
+.open-can-button .open-can-icon {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.2rem;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.27rem;
+}
+
+.open-can-button .open-can-lid {
+  transform-origin: 17px 10px;
+}
+
+.open-can-button.opening .open-can-lid {
+  animation: open-can-lid 520ms ease-in-out infinite alternate;
+}
+
+.flight-record-review-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.traveler-record-decisions {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.8rem;
+  padding: 0.75rem;
+  border: 1px solid #d98d86;
+  border-radius: 9px;
+  background: #fff5f2;
+}
+
+.traveler-record-decisions h4,
+.traveler-record-decisions p {
+  margin: 0;
+}
+
+.traveler-record-decisions .traveler-record-decisions-intro {
+  color: #3d5550;
+  font-size: 0.86rem;
+}
+
+.traveler-record-decisions strong {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.unaccounted-status {
+  display: inline-flex;
+  padding: 0.16rem 0.42rem;
+  border-radius: 999px;
+  background: #a62d28;
+  color: #fffaf0;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.traveler-record-decisions article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #ead1cc;
+}
+
+.traveler-record-decisions p {
+  margin-top: 0.2rem;
+  color: #7d2723;
+  font-size: 0.8rem;
+}
+
+.traveler-record-decisions .tin-button {
+  flex: 0 0 auto;
+}
+
+.flight-record-card {
+  overflow: hidden;
+  border: 1px solid #c9b77f;
+  border-radius: 10px;
+  background: #fffdf7;
+}
+
+/* Expanded cards contain autocomplete menus that need to extend beyond
+   the card body and remain clickable above the records below them. */
+.flight-record-card[open] {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+.flight-record-card.review {
+  border-color: #b64b42;
+  box-shadow: inset 4px 0 0 #b64b42;
+}
+
+.flight-record-card > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.68rem 0.8rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.flight-record-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.record-summary-confirmation {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1.25rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #b64b42;
+  border-radius: 7px;
+  background: #f8e1dc;
+  color: #7d2723;
+  font-size: 0.8rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.record-summary-confirmation.confirmed {
+  border-color: #719174;
+  background: #e4efe1;
+  color: #285c34;
+}
+
+.record-summary-confirmation input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.confirmation-dial {
+  position: relative;
+  flex: 0 0 auto;
+  width: 23px;
+  height: 23px;
+  border: 2px solid #5b4c29;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #d9c27b 0%, #947c3f 46%, #5b4c29 73%, #3f351f 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(239, 219, 151, 0.32),
+    inset 0 -2px 3px rgba(43, 34, 18, 0.34),
+    0 1px 1px rgba(48, 41, 28, 0.28);
+}
+
+.confirmation-dial::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: #39382f;
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(235, 214, 145, 0.12);
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.record-summary-confirmation input:checked + .confirmation-dial::after,
+.shared-roster-confirmation input:checked + .confirmation-dial::after {
+  background: radial-gradient(circle at 38% 32%, #7fb18a 0%, #397044 42%, #285c34 70%, #193b2a 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(220, 255, 224, 0.3),
+    0 0 0 1px rgba(30, 82, 43, 0.25),
+    0 0 7px rgba(57, 112, 68, 0.35);
+}
+
+.record-summary-confirmation input:focus-visible + .confirmation-dial,
+.shared-roster-confirmation input:focus-visible + .confirmation-dial {
+  outline: 3px solid rgba(166, 47, 43, 0.25);
+  outline-offset: 2px;
+}
+
+.record-summary-confirmation:hover .confirmation-dial,
+.shared-roster-confirmation:hover .confirmation-dial {
+  border-color: #a62f2b;
+}
+
+.flight-record-card > summary::before {
+  content: "▸";
+  grid-column: 1;
+  grid-row: 1;
+  width: 1rem;
+  color: #6e5e31;
+}
+
+.flight-record-card[open] > summary::before {
+  content: "▾";
+}
+
+.flight-record-summary-main {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-left: 1.25rem;
+}
+
+.flight-record-summary-copy {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.flight-record-summary-copy small {
+  color: #45645f;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.flight-record-summary-main span {
+  white-space: nowrap;
+  color: #5f5124;
+  font-weight: 800;
+}
+
+.flight-record-status {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.flight-record-status.review {
+  background: #f4d7d2;
+  color: #8d2925;
+}
+
+.flight-record-status.complete {
+  background: #dcebd8;
+  color: #285c34;
+}
+
+.flight-record-card-body {
+  padding: 0.75rem;
+  border-top: 1px solid #e1d5af;
+  background: #faf4e4;
+}
+
+.record-traveler-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 0.38rem;
+}
+
+.record-traveler-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid #d8c99d;
+  border-radius: 8px;
+  background: #fffdf7;
+}
+
+.record-traveler-identity {
+  display: grid;
+  min-width: 0;
+}
+
+.record-traveler-identity span {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-traveler-identity small {
+  overflow: hidden;
+  color: #6e5e31;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-traveler-chip button {
+  flex: 0 0 auto;
+  margin-left: 0.4rem;
+  border: 0;
+  background: transparent;
+  color: #8d2925;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.record-warning-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #b64b42;
+  border-radius: 8px;
+  background: #f8e1dc;
+  color: #7d2723;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.record-warning-confirmation input {
+  flex: 0 0 auto;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.08rem;
+  accent-color: #8d2925;
+}
+
+.tour-flight-review-section {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.tour-flight-review-section > h4 {
+  margin: 0;
+  color: #193b3a;
+}
+
+.tour-flight-split-card {
+  overflow: hidden;
+  border: 1px solid #c9b77f;
+  border-radius: 10px;
+  background: #fffdf7;
+  box-shadow: inset 4px 0 0 #b64b42;
+}
+
+.tour-flight-split-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.tour-flight-split-heading p {
+  margin: 0.2rem 0 0;
+  color: #6e5e31;
+  font-size: 0.82rem;
+}
+
+.tour-flight-split-card > details {
+  margin: 0 0.75rem 0.7rem;
+  border: 1px solid #ddd0aa;
+  border-radius: 8px;
+  background: #faf4e4;
+}
+
+.tour-flight-split-card > details > summary {
+  padding: 0.55rem 0.7rem;
+  color: #294643;
+  font-size: 0.85rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.tour-flight-split-card > details .record-traveler-list {
+  padding: 0 0.65rem 0.65rem;
+}
+
+.tour-flight-own-air-review {
+  margin: 0 0.75rem 0.7rem;
+  padding: 0.7rem;
+  border: 1px solid #ddd0aa;
+  border-radius: 8px;
+  background: #faf4e4;
+}
+
+.tour-flight-own-air-review > strong {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: #294643;
+  font-size: 0.88rem;
+}
+
+.tour-flight-own-air-review > .record-traveler-list {
+  margin-bottom: 0.55rem;
+}
+
+.own-air-traveler-selector {
+  overflow: hidden;
+  border: 1px solid #c9b77f;
+  border-radius: 8px;
+  background: #fffdf7;
+}
+
+.own-air-traveler-selector > summary,
+.own-air-traveler-selector-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.58rem 0.68rem;
+  color: #294643;
+  font-size: 0.84rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.bulk-traveler-selector .own-air-traveler-selector-heading span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.bulk-traveler-selector .own-air-traveler-selector-heading small {
+  color: #6f684f;
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.own-air-traveler-selector-heading {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #d8c99d;
+}
+
+.own-air-decision-alert {
+  margin-bottom: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #b64b42;
+  border-radius: 8px;
+  background: #f8e1dc;
+  color: #7d2723;
+}
+
+.own-air-decision-alert.complete {
+  border-color: #719174;
+  background: #e4efe1;
+  color: #285c34;
+}
+
+.own-air-decision-alert p {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+}
+
+.own-air-traveler-selector > summary strong,
+.own-air-traveler-selector-heading strong {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: #eadfbe;
+  color: #5f5124;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.own-air-traveler-selector-body {
+  padding: 0.65rem;
+  border-top: 1px solid #ddd0aa;
+  background: #faf4e4;
+}
+
+.own-air-traveler-selector-body > input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.55rem;
+  padding: 0.58rem 0.68rem;
+  border: 1px solid #a9965e;
+  border-radius: 8px;
+  outline: none;
+  background: #fffdf7;
+  color: #193b3a;
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.own-air-traveler-selector-body > input:focus {
+  border-color: #346965;
+  box-shadow: 0 0 0 3px rgba(52, 105, 101, 0.16);
+}
+
+.bulk-traveler-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.bulk-traveler-actions button {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #8d7a43;
+  border-radius: 7px;
+  background: #fffdf7;
+  color: #294643;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bulk-traveler-actions .tin-button {
+  margin-left: auto;
+  background: #d9bd4c;
+}
+
+.bulk-traveler-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.own-air-traveler-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.4rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.own-air-traveler-grid > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #d8c99d;
+  border-radius: 8px;
+  background: #fffdf7;
+  color: #193b3a;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+.own-air-traveler-grid > button:hover {
+  border-color: #8d7a43;
+  background: #f4e8c7;
+}
+
+.own-air-traveler-grid > button.selected {
+  border-color: #719174;
+  background: #e4efe1;
+  box-shadow: inset 3px 0 0 #397044;
+}
+
+.own-air-selection-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.42rem;
+  border: 1px solid #a9965e;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  background: #eadfbe;
+  color: #5f5124;
+  font-weight: 900;
+}
+
+.own-air-traveler-grid > button.selected .own-air-selection-mark {
+  border-color: #397044;
+  background: #397044;
+  color: #fffdf7;
+}
+
+.record-traveler-picker {
+  position: relative;
+}
+
+.record-traveler-picker > input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.62rem 0.72rem;
+  border: 1px solid #a9965e;
+  border-radius: 8px;
+  outline: none;
+  background: #fffdf7;
+  color: #193b3a;
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.record-traveler-picker > input::placeholder {
+  color: #7b735f;
+}
+
+.record-traveler-picker > input:focus {
+  border-color: #346965;
+  box-shadow: 0 0 0 3px rgba(52, 105, 101, 0.16);
+}
+
+.browse-travelers-button {
+  margin-top: 0.42rem;
+  padding: 0.38rem 0.58rem;
+  border: 1px solid #8d7a43;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fff8e7, #ead9a8);
+  color: #294643;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.browse-travelers-button:hover {
+  border-color: #5b4c29;
+  background: linear-gradient(180deg, #f8e9b8, #d9bd62);
+}
+
+.record-traveler-picker-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.3rem);
+  right: 0;
+  left: 0;
+  display: grid;
+  max-height: 15rem;
+  overflow-y: auto;
+  border: 1px solid #a9965e;
+  border-radius: 8px;
+  background: #fffdf7;
+  box-shadow: 0 8px 20px rgba(51, 43, 25, 0.2);
+}
+
+.record-traveler-picker-results.browsing {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  margin-top: 0.42rem;
+  box-shadow: inset 0 1px 2px rgba(51, 43, 25, 0.1);
+}
+
+.record-traveler-picker-results button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-bottom: 1px solid #e4d9bb;
+  background: transparent;
+  color: #294643;
+  text-align: left;
+  cursor: pointer;
+}
+
+.record-traveler-picker-results button:last-child {
+  border-bottom: 0;
+}
+
+.record-traveler-picker-results button:hover,
+.record-traveler-picker-results button:focus-visible {
+  outline: none;
+  background: #f2e6c6;
+}
+
+.record-traveler-picker-results span {
+  color: #6e5e31;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.shared-roster-confirmation-wrap {
+  padding: 0 0.75rem 0.75rem;
+}
+
+.shared-roster-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid #b64b42;
+  border-radius: 8px;
+  background: #f8e1dc;
+  color: #7d2723;
+  cursor: pointer;
+}
+
+.shared-roster-confirmation.confirmed {
+  border-color: #719174;
+  background: #e4efe1;
+  color: #285c34;
+}
+
+.shared-roster-confirmation input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.shared-roster-confirmation .confirmation-copy {
+  display: grid;
+  gap: 0.08rem;
+}
+
+.shared-roster-confirmation small {
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+@media (max-width: 620px) {
+  .tour-flight-split-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .tour-flight-split-heading .flight-record-status {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .record-traveler-picker-results button {
+    grid-template-columns: 1fr;
+    gap: 0.12rem;
+  }
+}
+
+@keyframes open-can-lid {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(24deg); }
+}
+
+/* ==================================================
+   REVIEW WORKSPACE UI REFRESH
+================================================== */
+
+.analyze-repair-workspace {
+  height: min(780px, calc(100vh - 2rem));
+  min-height: 560px;
+  margin-top: 1rem;
+  border: 1px solid #d8d1c0;
+  border-radius: 15px;
+  background: #fffdf8;
+  box-shadow: 0 10px 28px rgba(35, 49, 44, 0.09);
+}
+
+.analyze-repair-header {
+  position: relative;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid #d8d1c0;
+  background: #f4f0e7;
+}
+
+.analyze-repair-header h3 { margin-bottom: 0.25rem; }
+.analyze-kicker { color: #8d2925; font-size: 0.68rem; }
+.trip-type-selector { margin-top: 0.65rem; }
+.trip-type-note { font-size: 0.78rem; }
+
+.export-readiness {
+  position: static;
+  width: 100%;
+  transform: none;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8d1c0;
+  border-radius: 10px;
+  background: #fffdf8;
+  box-shadow: none;
+}
+
+.analyze-repair-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: 1fr;
+  height: auto;
+  min-height: 0;
+  padding-bottom: 0;
+}
+
+.analyze-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.65rem 0.8rem;
+  border-right: 0;
+  border-bottom: 1px solid #d8d1c0;
+  background: #faf7f0;
+}
+
+.analyze-nav-button {
+  min-height: 38px;
+  margin: 0;
+  border: 1px solid #d1c9b7;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.analyze-nav-button:hover {
+  border-color: #8a9d97;
+  background: #f3f7f4;
+  transform: none;
+}
+
+.analyze-nav-button.active {
+  border-color: #8d2925;
+  background: #8d2925;
+  outline: 0;
+  box-shadow: none;
+}
+
+.analyze-nav-label { font-family: inherit; font-size: 0.8rem; }
+
+.analyze-panel {
+  min-height: 0;
+  padding: 1rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #fffdf8;
+}
+
+.analyze-panel-heading {
+  position: sticky;
+  z-index: 3;
+  top: -1rem;
+  margin: -1rem -1rem 0.85rem;
+  padding: 0.9rem 1rem 0.7rem;
+  border-bottom: 1px solid #e5dfd1;
+  background: rgba(255, 253, 248, 0.96);
+  backdrop-filter: blur(8px);
+}
+
+.analyze-panel-heading h3 { margin-bottom: 0.2rem; }
+.analyze-panel-heading p { margin-top: 0; font-size: 0.78rem; }
+
+.analyze-repair-workspace.list-workspace {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+.list-workspace .analyze-repair-body { overflow: visible; }
+.list-workspace .analyze-panel {
+  max-height: none;
+  overflow: visible;
+}
+.list-workspace .analyze-panel-heading {
+  position: static;
+  margin: -1rem -1rem 0.85rem;
+}
+
+.flight-record-review-grid { gap: 0.65rem; }
+.flight-record-card,
+.tour-flight-split-card,
+.comment-table-wrap,
+.compact-review-card,
+.passenger-review-card {
+  border-color: #d8d1c0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(35, 49, 44, 0.04);
+}
+.flight-record-card.review { border-color: #d98d86; box-shadow: inset 4px 0 0 #b64b42; }
+.flight-record-card.record-navigation-target {
+  outline: 3px solid #d5b64c;
+  outline-offset: 3px;
+}
+.flight-record-card > summary { padding: 0.75rem 0.85rem; }
+.flight-record-card-body { border-top-color: #e5dfd1; background: #faf8f2; }
+.record-traveler-chip { border-color: #ddd7c9; background: #fff; }
+
+.passenger-review-tools {
+  border-color: #d8d1c0;
+  background: #f4f0e7;
+}
+.passenger-review-list {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  max-height: none;
+  overflow: visible;
+}
+.passenger-review-card { min-height: 128px; }
+
+/* Lead the visual review with unresolved source exceptions. */
+.passenger-review-panel {
+  display: flex;
+  flex-direction: column;
+}
+.passenger-unmatched-review {
+  order: 1;
+  margin: 0 0 0.85rem;
+  padding: 0 0 0.85rem;
+  border-top: 0;
+  border-bottom: 1px solid #c9b77f;
+}
+.passenger-review-list { order: 2; }
+
+@media (min-width: 1400px) {
+  .analyze-nav {
+    grid-template-columns: repeat(4, minmax(220px, 280px));
+    justify-content: center;
+    width: 100%;
+  }
+
+  .passenger-review-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+.comment-review-table th { background: #f1ede4; }
+
+@media (max-width: 820px) {
+  .analyze-repair-workspace {
+    height: calc(100vh - 1rem);
+    min-height: 520px;
+  }
+  .analyze-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .export-readiness { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+/* A 1366x768 laptop remains the desktop baseline. Keep the complete
+   passenger/TD editor and its actions visible without relying on a tall monitor. */
+@media (max-height: 800px) and (min-width: 851px) {
+  .analyze-repair-workspace {
+    height: calc(100vh - 0.5rem);
+    min-height: 0;
+    margin-top: 0.5rem;
+  }
+  .analyze-repair-header {
+    gap: 0.35rem;
+    padding: 0.55rem 0.75rem;
+  }
+  .analyze-repair-header h3 { margin-bottom: 0.1rem; }
+  .trip-type-selector { margin-top: 0.25rem; }
+  .trip-type-note { margin: 0.2rem 0; font-size: 0.7rem; }
+  .export-readiness { padding: 0.4rem 0.55rem; }
+  .analyze-nav { padding: 0.4rem 0.55rem; }
+  .analyze-nav-button { min-height: 32px; }
+  .analyze-panel { padding: 0.55rem; }
+  .analyze-panel-heading {
+    top: -0.55rem;
+    margin: -0.55rem -0.55rem 0.4rem;
+    padding: 0.45rem 0.65rem;
+  }
+  .analyze-panel-heading p { margin-bottom: 0; }
+  .analyze-repair-workspace.list-workspace {
+    height: auto;
+    margin-top: 0.75rem;
+  }
+  .list-workspace .analyze-panel-heading {
+    margin: -0.55rem -0.55rem 0.4rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .analyze-repair-header { padding: 0.75rem; }
+  .analyze-nav { display: flex; overflow-x: auto; }
+  .analyze-nav-button { flex: 0 0 125px; }
+  .passenger-review-list { grid-template-columns: 1fr; }
+}

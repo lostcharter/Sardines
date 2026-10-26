@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env*
+.dev.vars*
+.wrangler/
+.npm-cache/
+/workers/problem-reporter/public/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sardines local backups / patch bundles
+*.zip
+
+# Sardines traveler/source data - NEVER commit
+*.csv
+*.pdf
+
+# Spreadsheet data - ignore by default
+*.xlsx
+*.private.json
+/Sardines_Test_Pack_v1/
+/Sanitizer/
+
+# Sardines needs these bundled, sanitized blank FMG templates
+!src/assets/FMG_Domestic_Final_Names_List_Template.xlsx
+!src/assets/FMG_International_Final_Names_List_Template.xlsx
