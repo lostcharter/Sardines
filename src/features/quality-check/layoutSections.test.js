@@ -12,6 +12,8 @@ test('G seats remain in an unconfirmed candidate with sparse or lowercase eviden
   for (const seats of [['12g'], ['12A', '12C', '12D', '12G']]) {
     const inferred = layoutSectionsForSeats(seats)[0]
     assert.ok(inferred.layout.flat().includes('G'))
+    assert.equal(inferred.letters, 'ABC-DEFG-HJK')
+    assert.equal(inferred.pattern, '3-4-3')
     assert.equal(inferred.confirmed, false)
   }
   const map = qualityCheckWorkbookModel(sample(['12A', '12G'])).maps[0]

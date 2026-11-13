@@ -7,10 +7,9 @@ export function normalizeSeatLabel(value) {
 export function inferSeatLayout(seats) {
   const letters = new Set(seats.map((seat) => clean(seat).match(/[A-Z]+$/i)?.[0]?.toUpperCase()).filter(Boolean))
   if (letters.size === 0) return [['A', 'B', 'C'], ['D', 'E', 'F']]
-  if (['H', 'J', 'K', 'L'].some((letter) => letters.has(letter))) return [['A', 'B', 'C'], ['D', 'E', 'F', 'G'], ['H', 'J', 'K']]
-  // G alone cannot establish the aircraft geometry, but it must remain in the
-  // candidate diagram. Inferred sections still require operator confirmation.
-  if (letters.has('G')) return [['A', 'B', 'C'], ['D', 'E', 'F', 'G']]
+  // G is also evidence for the widebody candidate when the group's assigned
+  // seats do not include the right-hand block. Geometry still needs review.
+  if (['G', 'H', 'J', 'K', 'L'].some((letter) => letters.has(letter))) return [['A', 'B', 'C'], ['D', 'E', 'F', 'G'], ['H', 'J', 'K']]
   if ([...letters].every((letter) => ['A', 'C', 'D', 'F'].includes(letter)) && !letters.has('B') && !letters.has('E')) return [['A', 'C'], ['D', 'F']]
   return [['A', 'B', 'C'], ['D', 'E', 'F']]
 }
