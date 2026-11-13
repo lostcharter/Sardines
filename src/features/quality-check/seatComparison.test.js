@@ -2,6 +2,21 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { compareSeatAssignments, seatComparisonSummary } from './seatComparison.js'
 
+for (const request of ['window or aisle', 'Aisle or Window', 'Ada Reef requests window or aisle']) {
+  test(`${request} accepts either position and keeps inferred geometry uncertain`, () => {
+    for (const [seat, expected] of [['12A', 'request-satisfied'], ['12G', 'request-satisfied'], ['12E', 'request-unmet']]) {
+      const traveler = { displayName: 'Ada Reef', ticketName: 'REEF/ADA', requests: request }
+      const input = { manifestTravelers: [traveler], ticketData: { schemaVersion: 2, flights: [{ label: 'Example flight' }], travelers: [{ ticketName: traveler.ticketName, flightIndexes: [0], assignments: [{ flightIndex: 0, seat }] }] } }
+      const pending = compareSeatAssignments(input).rows[0]
+      assert.equal(pending.status, 'verify')
+      assert.match(pending.message, /depends on actual seat layout/)
+      const reviewed = compareSeatAssignments({ ...input, layoutSections: { 0: [{ firstRow: 1, lastRow: 50, pattern: '3-4-3', letters: 'ABC-DEFG-HJK' }] } }).rows[0]
+      assert.equal(reviewed.status, expected)
+      assert.match(reviewed.message, /(?:window or aisle|aisle or window) seat/)
+    }
+  })
+}
+
 for (const ambiguous of [false, true]) {
   for (const position of ['', 'Window seat; ']) {
     test(`keeps ${ambiguous ? 'ambiguous' : 'missing'} companions pending ${position ? 'with a satisfied window request' : 'without a position request'}`, () => {

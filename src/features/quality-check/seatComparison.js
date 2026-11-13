@@ -11,16 +11,20 @@ function requestKind(requests) {
 
 function requestedSeatPosition(request, traveler) {
   const text = clean(request)
+  const positions = (clause) => {
+    const alternative = clause.match(/\b(window|aisle|middle)\s+or\s+(window|aisle|middle)\b/i)
+    return alternative ? [...new Set(alternative.slice(1).map((value) => value.toLowerCase()))] : clause.match(/\b(aisle|window|middle)\b/i)?.slice(1).map((value) => value.toLowerCase())
+  }
   const fullName = clean(traveler?.displayName)
   if (fullName) {
     const start = text.toUpperCase().indexOf(fullName.toUpperCase())
     if (start >= 0) {
       const ownClause = text.slice(start + fullName.length).split(/[.;|]/, 1)[0]
-      const ownPosition = ownClause.match(/\b(aisle|window|middle)\b/i)?.[1]
-      if (ownPosition) return ownPosition.toLowerCase()
+      const ownPosition = positions(ownClause)
+      if (ownPosition) return ownPosition
     }
   }
-  return text.match(/\b(aisle|window|middle)\b/i)?.[1]?.toLowerCase()
+  return positions(text)
 }
 
 export function compareSeatAssignments({ manifestTravelers, ticketData, layoutSections = {} }) {
@@ -121,7 +125,7 @@ export function compareSeatAssignments({ manifestTravelers, ticketData, layoutSe
       const rowLayout = section?.layout || layout
       const reviewed = section?.confirmed && rowLayout.flat().includes(row.seat.match(/[A-Z]+$/i)?.[0])
       const requestedPosition = requestedSeatPosition(request, row.traveler)
-      if (requestedPosition) checks.push({ label: `${requestedPosition} seat`, passed: seatPosition(row.seat, rowLayout) === requestedPosition, uncertain: ticketData.schemaVersion === 2 && !reviewed })
+      if (requestedPosition) checks.push({ label: `${requestedPosition.join(' or ')} seat`, passed: requestedPosition.includes(seatPosition(row.seat, rowLayout)), uncertain: ticketData.schemaVersion === 2 && !reviewed })
       if (/\b(?:furthest|as far as possible)\s+forward\b/i.test(request)) checks.push({ label: 'furthest forward', passed: Number.parseInt(row.seat, 10) === foremostRow, uncertain: ticketData.schemaVersion === 2 })
       const companionText = request.match(/\bnext to\s+([^;,.|]+)/i)?.[1]
       // Shared comments can describe another person's request to sit next to
