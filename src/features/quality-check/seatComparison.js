@@ -27,13 +27,18 @@ function requestedSeatPosition(request, traveler) {
   return positions(text)
 }
 
-export function compareSeatAssignments({ manifestTravelers, ticketData, layoutSections = {} }) {
+export function compareSeatAssignments({ manifestTravelers = null, ticketData, layoutSections = {} }) {
+  const ticketsOnly = manifestTravelers === null
+  const travelers = manifestTravelers ?? ticketData.travelers.map((ticket, index) => {
+    const [lastName = '', given = ''] = clean(ticket.ticketName).split('/', 2)
+    return { id: `ticket-${index + 1}`, ticketName: ticket.ticketName, lastName, firstName: given, displayName: ticket.displayName || [given, lastName].filter(Boolean).join(' '), requests: '', sourceTicket: ticket }
+  })
   const matchedTickets = new Set()
   const rows = []
   const issues = [...(ticketData.issues || [])]
   const seen = new Map()
-  manifestTravelers.forEach((traveler) => {
-    const tickets = matchingTickets(traveler, ticketData)
+  travelers.forEach((traveler) => {
+    const tickets = ticketsOnly ? [traveler.sourceTicket] : matchingTickets(traveler, ticketData)
     if (!tickets.length) {
       rows.push({ traveler, ticket: null, flight: { label: 'Unknown itinerary' }, flightIndex: null, seat: '', status: 'unmatched', message: 'Traveler could not be uniquely matched to a returned ticket. No flight or seat has been inferred.', sources: [] })
       return
@@ -59,7 +64,7 @@ export function compareSeatAssignments({ manifestTravelers, ticketData, layoutSe
         if (seen.has(key)) continue
         const kind = requestKind(traveler.requests)
         let status = 'no-request'
-        let message = 'No seat request was submitted.'
+        let message = ticketsOnly ? 'Ticket-only map. No manifest was supplied; submitted names and seat requests were not checked.' : 'No seat request was submitted.'
         if (unresolved || assignment.unresolved || flightIndex === null) {
           status = 'unresolved'
           message = 'Passenger or seat-to-flight evidence needs review. The source values have been retained; an unreadable assignment is not an unassigned seat.'
@@ -165,7 +170,7 @@ export function compareSeatAssignments({ manifestTravelers, ticketData, layoutSe
     })
   })
 
-  return { rows, unmatchedTickets, issues }
+  return { rows, unmatchedTickets, issues, ticketsOnly }
 }
 
 export function seatComparisonSummary(comparison) {

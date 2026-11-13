@@ -8,6 +8,36 @@ import { buildQualityCheckWorkbook, qualityCheckWorkbookModel } from './qualityC
 
 const section = (firstRow, lastRow, pattern = '2-4-2', letters = 'AB-CDEG-HJ', label = 'Economy') => ({ firstRow, lastRow, pattern, letters, label })
 
+test('tickets alone build maps, preserve conflicts and unresolved evidence, and do not check preferences', async () => {
+  const ticketData = { schemaVersion: 2, flights: sample().flights, travelers: [
+    { ticketName: 'REEF/ADA', flightIndexes: [0], assignments: [{ flightIndex: 0, seat: '12G' }] },
+    { ticketName: 'SHOAL/BEN', flightIndexes: [0], assignments: [{ flightIndex: 0, seat: '12G' }] },
+    { ticketName: 'TIDE/CORA', flightIndexes: [0], assignments: [{ flightIndex: 0, seat: '' }] },
+    { ticketName: 'CORAL/DAN', flightIndexes: [], associationStatus: 'unresolved', assignments: [] },
+  ] }
+  const comparison = compareSeatAssignments({ ticketData })
+  assert.equal(comparison.ticketsOnly, true)
+  assert.deepEqual(comparison.unmatchedTickets, [])
+  assert.deepEqual(comparison.rows.map((row) => row.status), ['conflict', 'conflict', 'unassigned', 'unresolved'])
+  const result = { ...comparison, flights: ticketData.flights, manifestTravelers: null, ticketData }
+  const model = qualityCheckWorkbookModel(result)
+  assert.equal(model.maps[0].bySeat.get('12G').owners.length, 2)
+  assert.equal(model.unplacedRows.length, 1)
+  assert.deepEqual(model.missedRequests, [])
+  assert.ok((await buildQualityCheckWorkbook(result)).size > 0)
+  const reapplied = compareSeatAssignments({ ticketData, manifestTravelers: null, layoutSections: { 0: [section(1, 20, '3-4-3', 'ABC-DEFG-HJK')] } })
+  assert.deepEqual(reapplied.rows.map((row) => row.status), comparison.rows.map((row) => row.status))
+})
+
+test('ticket-only assignments without conflicts do not invent requests or unmatched passengers', () => {
+  const ticketData = { schemaVersion: 2, flights: sample().flights, travelers: [{ ticketName: 'REEF/ADA', flightIndexes: [0], assignments: [{ flightIndex: 0, seat: '12A' }] }] }
+  const result = compareSeatAssignments({ ticketData })
+  assert.equal(result.rows[0].traveler.displayName, 'ADA REEF')
+  assert.equal(result.rows[0].status, 'no-request')
+  assert.match(result.rows[0].message, /not checked/)
+  assert.deepEqual(result.unmatchedTickets, [])
+})
+
 test('G seats remain in an unconfirmed candidate with sparse or lowercase evidence', () => {
   for (const seats of [['12g'], ['12A', '12C', '12D', '12G']]) {
     const inferred = layoutSectionsForSeats(seats)[0]

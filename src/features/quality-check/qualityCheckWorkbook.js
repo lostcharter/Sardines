@@ -215,18 +215,18 @@ function summarySheet(model, result) {
   const satisfied = result.rows.filter((row) => row.status === 'request-satisfied').length
   const critical = model.diagnostics.filter((issue) => issue.severity === 'critical').length
   const pending = model.issues.length || model.diagnostics.length
-  const summaryMessage = critical ? `${critical} CRITICAL ticket conflicts require review.` : pending ? 'Unresolved ticket or seat evidence requires review; results are not cleared.' : model.missedRequests.length ? `${model.missedRequests.length} seat requests missed the mark.` : 'No definite missed requests detected; check layout-dependent requests in Review.'
+  const summaryMessage = critical ? `${critical} CRITICAL ticket conflicts require review.` : pending ? 'Unresolved ticket or seat evidence requires review; results are not cleared.' : result.ticketsOnly ? 'Ticket-only seat maps. No manifest supplied; passenger completeness and seating preferences were not checked.' : model.missedRequests.length ? `${model.missedRequests.length} seat requests missed the mark.` : 'No definite missed requests detected; check layout-dependent requests in Review.'
   const rows = [
     { number: 1, height: 34, cells: [{ column: 1, value: 'Sardines Quality Check', style: 1 }] },
     { number: 2, height: 28, cells: [{ column: 1, value: summaryMessage, style: critical ? 9 : pending || model.missedRequests.length ? 6 : 7 }] },
-    { number: 4, cells: [{ column: 1, value: 'Travelers submitted', style: 3 }, { column: 2, value: result.summary?.submitted ?? new Set(result.rows.map((row) => row.traveler)).size, style: 8 }] },
+    { number: 4, cells: [{ column: 1, value: 'Travelers submitted', style: 3 }, { column: 2, value: result.ticketsOnly ? 'Not supplied' : result.summary?.submitted ?? new Set(result.rows.map((row) => row.traveler)).size, style: 8 }] },
     { number: 5, cells: [{ column: 1, value: 'Actual flights checked', style: 3 }, { column: 2, value: result.flights.length, style: 8 }] },
     { number: 6, cells: [{ column: 1, value: 'Traveler-flight assignments', style: 3 }, { column: 2, value: totalAssignments, style: 8 }] },
-    { number: 7, cells: [{ column: 1, value: 'Requests confirmed satisfied', style: 3 }, { column: 2, value: satisfied, style: 5 }] },
-    { number: 8, cells: [{ column: 1, value: 'Requests not satisfied', style: 3 }, { column: 2, value: model.missedRequests.length, style: model.missedRequests.length ? 6 : 5 }] },
+    { number: 7, cells: [{ column: 1, value: 'Requests confirmed satisfied', style: 3 }, { column: 2, value: result.ticketsOnly ? 'Not checked' : satisfied, style: 5 }] },
+    { number: 8, cells: [{ column: 1, value: 'Requests not satisfied', style: 3 }, { column: 2, value: result.ticketsOnly ? 'Not checked' : model.missedRequests.length, style: model.missedRequests.length ? 6 : 5 }] },
     { number: 10, cells: [{ column: 1, value: 'Traveler', style: 3 }, { column: 2, value: 'Flight', style: 3 }, { column: 3, value: 'Seat', style: 3 }, { column: 4, value: 'Submitted request', style: 3 }, { column: 5, value: 'What missed', style: 3 }] },
   ]
-  if (!model.missedRequests.length) rows.push({ number: 11, cells: [{ column: 1, value: 'No missed requests found by the current checks.', style: 5 }] })
+  if (!model.missedRequests.length) rows.push({ number: 11, cells: [{ column: 1, value: result.ticketsOnly ? 'Seating preferences not checked — no manifest supplied.' : 'No missed requests found by the current checks.', style: result.ticketsOnly ? 2 : 5 }] })
   model.missedRequests.forEach((item, index) => rows.push({ number: index + 11, height: 46, cells: [item.traveler, item.flight, item.seat, item.request, item.reason].map((value, column) => ({ column: column + 1, value, style: 6 })) }))
   return sheetXml(rows, [30, 18, 10, 58, 52], ['A1:E1', 'A2:E2'], 'A11')
 }
