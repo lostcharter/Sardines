@@ -221,10 +221,9 @@ function App() {
           )}
         </div>
 
-        {activeWorkflow ===
-          'final-group-ticket-list' && (
-            <FinalGroupTicketList />
-          )}
+        <div hidden={activeWorkflow !== 'final-group-ticket-list'}>
+          <FinalGroupTicketList />
+        </div>
 
         {activeWorkflow ===
           'logo-tool' && (

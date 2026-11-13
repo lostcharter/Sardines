@@ -2012,10 +2012,14 @@ function AnalyzeRepairWorkspace({
     )
 
 
+  const currentFlightAssignments = useMemo(() => effectiveAssignments
+    ? refreshFlightAssignmentSummary({ ...flightAssignments, ...effectiveAssignments })
+    : flightAssignments, [flightAssignments, effectiveAssignments])
+
   const summary =
     buildReviewSummary({
       exceptionRows,
-      flightAssignments,
+      flightAssignments: currentFlightAssignments,
 
       commentReviews:
         scopedCommentReviews,
@@ -2318,7 +2322,7 @@ function AnalyzeRepairWorkspace({
                 key={passengerInitialAirFilter}
                 travelers={travelers}
                 flightRecords={flightRecords}
-                flightAssignments={flightAssignments}
+                flightAssignments={currentFlightAssignments}
                 overrides={passengerOverrides}
                 onChange={onPassengerOverrideChange}
                 onAdd={onAddManualPerson}
@@ -2380,9 +2384,7 @@ function AnalyzeRepairWorkspace({
               </>
             )}
 
-          {activeSection ===
-            'flights' && (
-              <>
+          <div hidden={activeSection !== 'flights'}>
                 <div className="analyze-panel-heading">
                   <h3>
                     Flight Records
@@ -2419,8 +2421,7 @@ function AnalyzeRepairWorkspace({
                     )
                   }}
                 />
-              </>
-            )}
+          </div>
         </div>
       </div>
     </div>
@@ -2632,6 +2633,7 @@ function FinalGroupTicketList() {
   const [frequentFlyerDecisions, setFrequentFlyerDecisions] = useState({})
 
   const [reviewSection, setReviewSection] = useState('flights')
+  const [reviewGeneration, setReviewGeneration] = useState(0)
   const [passengerInitialAirFilter, setPassengerInitialAirFilter] = useState('all')
   const [focusedRecord, setFocusedRecord] = useState(null)
 
@@ -3056,6 +3058,8 @@ function FinalGroupTicketList() {
     }
 
     setError('')
+    setReviewGeneration((generation) => generation + 1)
+    setEffectiveAssignments(null)
     setTourDirectorContact(
       emptyTourDirectorContact()
     )
@@ -3408,7 +3412,7 @@ function FinalGroupTicketList() {
       })
 
     return [
-      ...(displayedFlightAssignments?.companyRecordStatus ?? []),
+      ...(refreshFlightAssignmentSummary(effectiveAssignments ? { ...displayedFlightAssignments, ...effectiveAssignments } : displayedFlightAssignments)?.companyRecordStatus ?? []),
       ...sharedStatuses,
     ].sort((left, right) => Number(left.recordNumber) - Number(right.recordNumber))
       })()
@@ -3710,6 +3714,7 @@ function FinalGroupTicketList() {
           </section>
 
           <AnalyzeRepairWorkspace
+            key={reviewGeneration}
             activeSection={reviewSection}
             onActiveSectionChange={setReviewSection}
             passengerInitialAirFilter={passengerInitialAirFilter}

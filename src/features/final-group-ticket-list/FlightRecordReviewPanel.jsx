@@ -151,7 +151,7 @@ function BulkTravelerSelector({ travelers, excludedKeys, openSeats, onAssign }) 
             disabled={chosen.length === 0}
             onClick={() => { onAssign(chosen); setSelectedKeys([]) }}
           >
-            Assign {chosen.length || ''} selected traveler{chosen.length === 1 ? '' : 's'}
+            Confirm assignment of {chosen.length || ''} selected traveler{chosen.length === 1 ? '' : 's'}
           </button>
         </div>
         <div className="own-air-traveler-grid">
@@ -325,11 +325,7 @@ function FlightRecordReviewPanel({
       )
 
   const companyTravelers = companyTravelerRoster(companyAssignments)
-  const travelersNeedingRecord = companyAssignments.filter((assignment) =>
-    assignment.recordNumber == null &&
-    assignment.reviewRequired &&
-    !['own-air'].includes(assignment.assignmentType)
-  )
+
 
   const effectiveCompanyAssignments =
     useMemo(
@@ -375,6 +371,10 @@ function FlightRecordReviewPanel({
         companyOverrides,
       ]
     )
+
+  const travelersNeedingRecord = effectiveCompanyAssignments.filter((assignment) =>
+    assignment.recordNumber == null && assignment.reviewRequired && assignment.assignmentType !== 'own-air'
+  )
 
   const effectiveTourFlightAssignments =
     useMemo(

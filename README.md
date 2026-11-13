@@ -48,7 +48,7 @@ Sardines currently has a working end-to-end workflow for its first supported gro
 11. Generate the appropriate FMG Domestic or International Final Names List workbook.
 12. Generate Sardines review worksheets alongside the submission sheet.
 
-After processing, file setup condenses to a single status bar so completed inputs do not lengthen the browser page. Review work stays in a tabbed workspace. Compact traveler forms are designed to fit a standard laptop screen, while long flight-record lists use natural page scrolling so their controls are not squeezed into a shallow internal pane.
+After processing, file setup condenses to a single status bar so completed inputs do not lengthen the browser page. Review work stays in a tabbed workspace. Confirming a flight assignment updates its traveler status immediately and keeps the assignment when switching review tabs or Sardines workflows. Decisions remain in memory for the current session; reprocessing inputs, replacing the contract, or reloading the page starts a fresh review. Compact traveler forms are designed to fit a standard laptop screen, while long flight-record lists use natural page scrolling so their controls are not squeezed into a shallow internal pane.
 
 The generated XLSX now opens cleanly in Microsoft Excel without requiring workbook repair.
 
