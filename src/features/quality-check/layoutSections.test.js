@@ -8,6 +8,32 @@ import { buildQualityCheckWorkbook, qualityCheckWorkbookModel } from './qualityC
 
 const section = (firstRow, lastRow, pattern = '2-4-2', letters = 'AB-CDEG-HJ', label = 'Economy') => ({ firstRow, lastRow, pattern, letters, label })
 
+test('G seats remain in an unconfirmed candidate with sparse or lowercase evidence', () => {
+  for (const seats of [['12g'], ['12A', '12C', '12D', '12G']]) {
+    const inferred = layoutSectionsForSeats(seats)[0]
+    assert.ok(inferred.layout.flat().includes('G'))
+    assert.equal(inferred.confirmed, false)
+  }
+  const map = qualityCheckWorkbookModel(sample(['12A', '12G'])).maps[0]
+  assert.deepEqual(map.outsideDiagram, [])
+  assert.equal(map.bySeat.get('12G').traveler.displayName, 'Person 1')
+})
+
+for (const [request, seat, position] of [['window', '12A', 'window'], ['Aisle', '12C', 'aisle']]) {
+  test(`recognizes bare ${request} requests and evaluates them after layout confirmation`, () => {
+    const traveler = { displayName: 'Ada Reef', ticketName: 'REEF/ADA', requests: request }
+    const input = {
+      manifestTravelers: [traveler],
+      ticketData: { schemaVersion: 2, flights: sample().flights, travelers: [{ ticketName: traveler.ticketName, flightIndexes: [0], assignments: [{ flightIndex: 0, seat }] }] },
+    }
+    const inferred = compareSeatAssignments(input).rows[0]
+    assert.equal(inferred.status, 'verify')
+    assert.match(inferred.message, new RegExp(`${position} seat`))
+    const reviewed = compareSeatAssignments({ ...input, layoutSections: { 0: [section(1, 20, '3-3', 'ABC-DEF')] } }).rows[0]
+    assert.equal(reviewed.status, 'request-satisfied')
+  })
+}
+
 test('typed patterns describe seat groups separated by aisles, retaining actual letters', () => {
   assert.deepEqual(parseLayoutPattern(' 2 - 4 - 2 '), [2, 4, 2])
   assert.deepEqual(parseLayoutPattern('3-3'), [3, 3])

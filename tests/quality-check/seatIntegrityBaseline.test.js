@@ -93,13 +93,13 @@ test('duplicate-seat map retains and names both owners', async () => {
 })
 
 for (const seat of ['50G', '55L']) {
-  test(`${seat} remains visible in Review and the map overflow list`, async () => {
+  test(`${seat} remains visible in Review and the map or overflow list`, async () => {
     const result = comparison(['12A', seat])
     const model = qualityCheckWorkbookModel(result)
     assert.equal(model.maps[0].bySeat.get(seat).traveler.displayName, 'Ben Shoal')
-    assert.ok(!model.maps[0].layout.flat().includes(seat.at(-1)))
+    assert.equal(model.maps[0].layout.flat().includes(seat.at(-1)), seat.endsWith('G'))
     assert.match((await worksheetText(result, 3)), new RegExp(`<t[^>]*>${seat}</t>`))
-    assert.equal(model.maps[0].outsideDiagram[0].seat, seat)
+    assert.deepEqual(model.maps[0].outsideDiagram.map((row) => row.seat), seat.endsWith('G') ? [] : [seat])
     assert.match((await worksheetText(result, 2)), new RegExp(`<t[^>]*>${seat}(?:\\s|<)`))
   })
 }
